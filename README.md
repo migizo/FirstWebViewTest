@@ -13,3 +13,6 @@ simple valnila js example with JUCE8 webview
 - Resource/juce-framework-frontendディレクトリにJUCE/modules/juce_gui_extra/native/javascriptフォルダを複製して配置してください。
 - PluginEditor.cpp冒頭のwebResourceDir変数に(index.htmlが配置されている)Resourceディレクトリを指定してください。
 - 状況に応じて同じくPluginEditor.cpp冒頭のUSE_LOCAL_HOSTフラグやurlAddress変数を変更してください。
+
+# 備考
+当方mac(intel)のみで動作確認を行なっています。
