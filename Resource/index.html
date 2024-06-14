@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>WebViewPluginDemo</title>
+  <style type="text/css">
+    body {
+      background-color: white;
+    }
+  </style>
+  <script type="module">
+    // JUCEが提供しているモジュールの読み込み
+    import * as Juce from "./juce-framework-frontend/javascript/index.js"
+
+    // withInitialisationData()で指定されたデータを使用
+    document.getElementById("h1").textContent = window.__JUCE__.initialisationData.h1;
+
+    // ResourceProviderによって提供されたinfoResource.jsonのupdateTime値を使用しテキストを更新する処理
+    function updateResourceText() {
+      fetch(Juce.getBackendResourceAddress("infoResource.json"))
+        .then((response) => response.text())
+        .then((text) => {
+          const data = JSON.parse(text);
+          document.getElementById("resourceText").textContent = "last clicked: " + data.updateTime;
+        })
+    }
+
+    // イベントを発行し、JUCE側でwithEventListener()で登録されているコールバックが呼ばれる
+    var emitCounter = 0;
+    document.getElementById("emitButton").addEventListener("click", () => {
+      window.__JUCE__.backend.emitEvent("clickOnFrontend", ++emitCounter);
+      updateResourceText();
+    });
+
+    // JUCE側でwithNativeFunction()で登録されているNativeFunctionを呼び出し、結果をpromiseで取得
+    let funcCounter = 0;
+    document.getElementById("nativeFunctionButton").addEventListener("click", () => {
+      const func = Juce.getNativeFunction("nativeFunc");
+      func(funcCounter).then((v) => {
+        funcCounter = v;
+        document.getElementById("nativeFunctionButton").value = "call 'nativeFunc': " + funcCounter;
+        updateResourceText();
+      });
+    });
+
+    // JUCE側からemitEventIfBrowserIsVisible()でイベントが発行されたら呼ばれる
+    window.__JUCE__.backend.addEventListener("clickOnBackend", (v) => {
+      document.getElementById("listenerText").textContent = "listen 'clickOnBackend': " + v;
+    });
+
+    // ここに関数や変数を定義してもJUCE側からevaluateJavascript()で呼び出せないので注意
+    // function addOne(v) {
+    //   return v + 1;
+    // };
+
+  </script>
+</head>
+
+<body>
+  <h1 id="h1"></h1>
+  <input type="button" id="emitButton" value="emit 'clickOnFrontend'">
+  <input type="button" id="nativeFunctionButton" value="call 'nativeFunc'">
+  <p id="resourceText"></p>
+  <p id="listenerText"></p>
+  <p id="changedByBackendText"></p>
+</body>
+
+</html>

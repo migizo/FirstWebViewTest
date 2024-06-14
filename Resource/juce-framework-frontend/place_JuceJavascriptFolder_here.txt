@@ -1,0 +1,2 @@
+ここにJUCE/modules/juce_gui_extra/native/javascriptフォルダーを複製して配置してください。
+(macにおいて「エイリアスを作成」して配置では対応できないことを確認済)
